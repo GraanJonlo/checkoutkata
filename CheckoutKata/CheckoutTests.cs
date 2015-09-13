@@ -37,9 +37,17 @@ namespace CheckoutKata
 
     public class CheckoutBuilder
     {
+        private IDictionary<string, int> _priceDetails = new Dictionary<string, int>(2) {{"A", 50}, {"B", 30}};
+
+        public CheckoutBuilder WithPriceDetails(IDictionary<string, int> priceDetails)
+        {
+            _priceDetails = priceDetails;
+            return this;
+        }
+
         public Checkout Build()
         {
-            return new Checkout(new Dictionary<string, int>(2) { { "A", 50 }, { "B", 30 } });
+            return new Checkout(_priceDetails);
         }
     }
 
