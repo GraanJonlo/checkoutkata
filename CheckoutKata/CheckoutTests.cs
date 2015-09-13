@@ -15,7 +15,8 @@ namespace CheckoutKata
         [Test]
         public void Scanning_an_A_gives_a_total_of_50()
         {
-            Checkout checkout = new CheckoutBuilder().Build();
+            Checkout checkout =
+                new CheckoutBuilder().WithPriceDetails(new Dictionary<string, int>(1) {{"A", 50}}).Build();
 
             checkout.Scan("A");
 
@@ -26,7 +27,8 @@ namespace CheckoutKata
         [Test]
         public void Scanning_a_B_gives_a_total_of_30()
         {
-            Checkout checkout = new CheckoutBuilder().Build();
+            Checkout checkout =
+                new CheckoutBuilder().WithPriceDetails(new Dictionary<string, int>(1) { { "B", 30 } }).Build();
 
             checkout.Scan("B");
 
@@ -37,7 +39,13 @@ namespace CheckoutKata
 
     public class CheckoutBuilder
     {
-        private IDictionary<string, int> _priceDetails = new Dictionary<string, int>(2) {{"A", 50}, {"B", 30}};
+        private IDictionary<string, int> _priceDetails = new Dictionary<string, int>(4)
+        {
+            {"A", 50},
+            {"B", 30},
+            {"C", 20},
+            {"D", 15}
+        };
 
         public CheckoutBuilder WithPriceDetails(IDictionary<string, int> priceDetails)
         {
