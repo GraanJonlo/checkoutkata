@@ -43,6 +43,8 @@ namespace CheckoutKata
             {"D", 15}
         });
 
+        private readonly IKeepTotal _total = new InMemoryTotal();
+
         public CheckoutBuilder With(ILookupPrices priceLookup)
         {
             _priceLookup = priceLookup;
@@ -51,7 +53,7 @@ namespace CheckoutKata
 
         public Checkout Build()
         {
-            return new Checkout(_priceLookup);
+            return new Checkout(_priceLookup, _total);
         }
     }
 
@@ -60,10 +62,10 @@ namespace CheckoutKata
         private readonly ILookupPrices _priceLookup;
         private readonly IKeepTotal _total;
 
-        public Checkout(ILookupPrices priceLookup)
+        public Checkout(ILookupPrices priceLookup, IKeepTotal total)
         {
             _priceLookup = priceLookup;
-            _total = new InMemoryTotal();
+            _total = total;
         }
 
         public int Total()
