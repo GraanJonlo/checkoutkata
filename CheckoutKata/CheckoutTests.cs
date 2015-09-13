@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography;
 using NUnit.Framework;
 
 namespace CheckoutKata
@@ -123,30 +122,35 @@ namespace CheckoutKata
 
     internal class DiscountTracker : IListenForSkus
     {
-        private int _countA;
-        private int _countB;
-        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
+        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
+        private readonly Dictionary<string, int> _skuCount = new Dictionary<string, int>();
 
         public void SkuScanned(string sku)
         {
             if (sku.Equals("A"))
             {
-                _countA++;
+                if (!_skuCount.ContainsKey(sku))
+                {
+                    _skuCount.Add(sku, 0);
+                }
+                _skuCount[sku] = _skuCount[sku] + 1;
+                if (_skuCount[sku] == 3)
+                {
+                    NotifyListeners(20);
+                }
             }
 
             if (sku.Equals("B"))
             {
-                _countB++;
-            }
-
-            if (_countA == 3)
-            {
-                NotifyListeners(20);
-            }
-
-            if (_countB == 2)
-            {
-                NotifyListeners(15);
+                if (!_skuCount.ContainsKey(sku))
+                {
+                    _skuCount.Add(sku, 0);
+                }
+                _skuCount[sku] = _skuCount[sku] + 1;
+                if (_skuCount[sku] == 2)
+                {
+                    NotifyListeners(15);
+                }
             }
         }
 
