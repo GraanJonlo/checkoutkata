@@ -45,7 +45,9 @@
   <ItemGroup>
     <Compile Include="CheckoutTests.cs" />
     <Compile Include="IListenForTotals.cs" />
+    <Compile Include="ILookupPrices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StubbedPriceLookup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
