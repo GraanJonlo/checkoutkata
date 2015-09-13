@@ -39,23 +39,23 @@ namespace CheckoutKata
 
     public class CheckoutBuilder
     {
-        private IDictionary<string, int> _priceDetails = new Dictionary<string, int>(4)
+        private ILookupPrices _priceLookup = new InMemoryPriceLookup(new Dictionary<string, int>(4)
         {
             {"A", 50},
             {"B", 30},
             {"C", 20},
             {"D", 15}
-        };
+        });
 
         public CheckoutBuilder WithPriceDetails(IDictionary<string, int> priceDetails)
         {
-            _priceDetails = priceDetails;
+            _priceLookup = new InMemoryPriceLookup(priceDetails);
             return this;
         }
 
         public Checkout Build()
         {
-            return new Checkout(_priceDetails);
+            return new Checkout(_priceLookup);
         }
     }
 
@@ -64,9 +64,9 @@ namespace CheckoutKata
         private int _total;
         private readonly ILookupPrices _priceLookup;
 
-        public Checkout(IDictionary<string, int> priceDetails)
+        public Checkout(ILookupPrices priceLookup)
         {
-            _priceLookup = new InMemoryPriceLookup(priceDetails);
+            _priceLookup = priceLookup;
         }
 
         public int Total()
