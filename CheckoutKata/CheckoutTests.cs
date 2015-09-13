@@ -39,18 +39,18 @@ namespace CheckoutKata
     {
         public Checkout Build()
         {
-            return new Checkout();
+            return new Checkout(new Dictionary<string, int>(2) { { "A", 50 }, { "B", 30 } });
         }
     }
 
     public class Checkout
     {
         private int _total;
-        private readonly Dictionary<string, int> _priceDetails;
+        private readonly IDictionary<string, int> _priceDetails;
 
-        public Checkout()
+        public Checkout(IDictionary<string, int> priceDetails)
         {
-            _priceDetails = new Dictionary<string, int>(2) { { "A", 50 }, { "B", 30 } };
+            _priceDetails = priceDetails;
         }
 
         public int Total()
