@@ -2,12 +2,12 @@
 
 namespace CheckoutKata
 {
-    internal class StubbedPriceLookup : ILookupPrices
+    internal class PriceLookup : IListenForSkus
     {
         private readonly IDictionary<string, int> _priceDetails;
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
 
-        public StubbedPriceLookup(IDictionary<string, int> priceDetails)
+        public PriceLookup(IDictionary<string, int> priceDetails)
         {
             _priceDetails = priceDetails;
         }

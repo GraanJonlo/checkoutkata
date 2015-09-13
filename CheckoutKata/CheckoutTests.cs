@@ -9,7 +9,7 @@ namespace CheckoutKata
         [Test]
         public void Scanning_an_item_gives_a_total_of_that_items_price()
         {
-            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
+            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
             Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("testSku");
@@ -21,8 +21,8 @@ namespace CheckoutKata
         [Test]
         public void Scanning_two_item_gives_a_total_of_their_summed_prices()
         {
-            ILookupPrices priceLookup =
-                new StubbedPriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
+            IListenForSkus priceLookup =
+                new PriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
             Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("ASku");
@@ -48,7 +48,7 @@ namespace CheckoutKata
 
     public class CheckoutBuilder
     {
-        private ILookupPrices _priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(4)
+        private IListenForSkus _priceLookup = new PriceLookup(new Dictionary<string, int>(4)
         {
             {"A", 50},
             {"B", 30},
@@ -56,11 +56,11 @@ namespace CheckoutKata
             {"D", 15}
         });
 
-        private readonly ITrackDiscounts _discountTracker = new DiscountTracker();
+        private readonly IListenForSkus _discountTracker = new DiscountTracker();
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 
-        public CheckoutBuilder With(ILookupPrices priceLookup)
+        public CheckoutBuilder With(IListenForSkus priceLookup)
         {
             _priceLookup = priceLookup;
             return this;
@@ -74,11 +74,11 @@ namespace CheckoutKata
 
     public class Checkout : IListenForTotals
     {
-        private readonly ILookupPrices _priceLookup;
-        private readonly ITrackDiscounts _discountTracker;
+        private readonly IListenForSkus _priceLookup;
+        private readonly IListenForSkus _discountTracker;
         private int _total;
 
-        public Checkout(ILookupPrices priceLookup, ITrackDiscounts discountTracker, IKeepTotal account)
+        public Checkout(IListenForSkus priceLookup, IListenForSkus discountTracker, IKeepTotal account)
         {
             _priceLookup = priceLookup;
             _priceLookup.Register(account);
@@ -106,7 +106,7 @@ namespace CheckoutKata
         }
     }
 
-    public class DiscountTracker : ITrackDiscounts
+    public class DiscountTracker : IListenForSkus
     {
         private int _countA;
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
@@ -138,13 +138,7 @@ namespace CheckoutKata
         }
     }
 
-    public interface ITrackDiscounts
-    {
-        void SkuScanned(string sku);
-        void Register(IKeepTotal listener);
-    }
-
-    public interface ILookupPrices
+    public interface IListenForSkus
     {
         void SkuScanned(string sku);
         void Register(IKeepTotal listener);
