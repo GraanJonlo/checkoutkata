@@ -80,14 +80,16 @@ namespace CheckoutKata
         {
             _priceLookup = priceLookup;
             _priceLookup.Register(account);
-            account.Register(this);
 
             _discountTracker = new DiscountTracker();
+            _discountTracker.Register(account);
+
+            account.Register(this);
         }
 
         public int Total()
         {
-            return _total - _discountTracker.GetDiscount();
+            return _total;
         }
 
         public void Scan(string sku)
@@ -105,6 +107,7 @@ namespace CheckoutKata
     public class DiscountTracker
     {
         private int _countA;
+        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
 
         public void SkuScanned(string sku)
         {
@@ -112,11 +115,24 @@ namespace CheckoutKata
             {
                 _countA++;
             }
+
+            if (_countA == 3)
+            {
+                NotifyListeners(20);
+            }
         }
 
-        public int GetDiscount()
+        private void NotifyListeners(int discount)
         {
-            return _countA == 3 ? 20 : 0;
+            foreach (IKeepTotal listener in _listeners)
+            {
+                listener.Debit(discount);
+            }
+        }
+
+        public void Register(IKeepTotal listener)
+        {
+            _listeners.Add(listener);
         }
     }
 
@@ -128,6 +144,12 @@ namespace CheckoutKata
         public void Credit(int amount)
         {
             _total += amount;
+            NotifyListeners();
+        }
+
+        public void Debit(int amount)
+        {
+            _total -= amount;
             NotifyListeners();
         }
 
@@ -148,6 +170,7 @@ namespace CheckoutKata
     public interface IKeepTotal
     {
         void Credit(int amount);
+        void Debit(int amount);
         void Register(IListenForTotals listener);
     }
 }
