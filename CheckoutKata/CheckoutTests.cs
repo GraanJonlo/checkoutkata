@@ -135,42 +135,4 @@ namespace CheckoutKata
             _listeners.Add(listener);
         }
     }
-
-    public class InMemoryTotal : IKeepTotal
-    {
-        private int _total;
-        private readonly List<IListenForTotals> _listeners = new List<IListenForTotals>(); 
-
-        public void Credit(int amount)
-        {
-            _total += amount;
-            NotifyListeners();
-        }
-
-        public void Debit(int amount)
-        {
-            _total -= amount;
-            NotifyListeners();
-        }
-
-        private void NotifyListeners()
-        {
-            foreach (IListenForTotals listener in _listeners)
-            {
-                listener.NewTotal(_total);
-            }
-        }
-
-        public void Register(IListenForTotals listener)
-        {
-            _listeners.Add(listener);
-        }
-    }
-
-    public interface IKeepTotal
-    {
-        void Credit(int amount);
-        void Debit(int amount);
-        void Register(IListenForTotals listener);
-    }
 }
