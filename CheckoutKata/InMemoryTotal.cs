@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CheckoutKata
 {
-    public class InMemoryTotal : IKeepTotal
+    internal class InMemoryTotal : IKeepTotal
     {
         private int _total;
         private readonly List<IListenForTotals> _listeners = new List<IListenForTotals>(); 

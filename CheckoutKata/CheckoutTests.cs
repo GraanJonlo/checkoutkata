@@ -10,7 +10,7 @@ namespace CheckoutKata
         public void Scanning_an_item_gives_a_total_of_that_items_price()
         {
             IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
-            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
+            Checkout checkout = new CheckoutBuilder().WithPriceLookup(priceLookup).Build();
 
             checkout.Scan("testSku");
 
@@ -23,7 +23,7 @@ namespace CheckoutKata
         {
             IListenForSkus priceLookup =
                 new PriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
-            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
+            Checkout checkout = new CheckoutBuilder().WithPriceLookup(priceLookup).Build();
 
             checkout.Scan("ASku");
             checkout.Scan("AnotherSku");
@@ -60,7 +60,7 @@ namespace CheckoutKata
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 
-        public CheckoutBuilder With(IListenForSkus priceLookup)
+        public CheckoutBuilder WithPriceLookup(IListenForSkus priceLookup)
         {
             _priceLookup = priceLookup;
             return this;
@@ -108,7 +108,7 @@ namespace CheckoutKata
         }
     }
 
-    public class DiscountTracker : IListenForSkus
+    internal class DiscountTracker : IListenForSkus
     {
         private int _countA;
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
@@ -138,11 +138,5 @@ namespace CheckoutKata
         {
             _listeners.Add(listener);
         }
-    }
-
-    public interface IListenForSkus
-    {
-        void SkuScanned(string sku);
-        void Register(IKeepTotal listener);
     }
 }
