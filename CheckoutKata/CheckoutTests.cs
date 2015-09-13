@@ -87,8 +87,7 @@ namespace CheckoutKata
 
         public int Total()
         {
-            var discount = _discountTracker.GetACount() == 3 ? 20 : 0;
-            return _total - discount;
+            return _total - _discountTracker.GetDiscount();
         }
 
         public void Scan(string sku)
@@ -115,9 +114,9 @@ namespace CheckoutKata
             }
         }
 
-        public int GetACount()
+        public int GetDiscount()
         {
-            return _countA;
+            return _countA == 3 ? 20 : 0;
         }
     }
 
