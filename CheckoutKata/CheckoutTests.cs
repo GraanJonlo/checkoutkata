@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace CheckoutKata
 {
@@ -53,15 +54,8 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            if (sku.Equals("A"))
-            {
-                _total = 50;
-            }
-
-            if (sku.Equals("B"))
-            {
-                _total = 30;
-            }
+            var priceDetails = new Dictionary<string, int>(2) {{"A", 50}, {"B", 30}};
+            _total = priceDetails[sku];
         }
     }
 }
