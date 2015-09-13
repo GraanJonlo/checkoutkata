@@ -44,14 +44,24 @@ namespace CheckoutKata
 
     public class Checkout
     {
+        private int _total;
+
         public int Total()
         {
-            return 50;
+            return _total;
         }
 
         public void Scan(string sku)
         {
-            // no op
+            if (sku.Equals("A"))
+            {
+                _total = 50;
+            }
+
+            if (sku.Equals("B"))
+            {
+                _total = 30;
+            }
         }
     }
 }
