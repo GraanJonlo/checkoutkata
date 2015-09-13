@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace CheckoutKata
@@ -124,32 +126,27 @@ namespace CheckoutKata
     {
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
         private readonly Dictionary<string, int> _skuCount = new Dictionary<string, int>();
+        private readonly Dictionary<string, Tuple<int,int>> _discountDetails = new Dictionary<string, Tuple<int, int>>(); 
+
+        public DiscountTracker()
+        {
+            _discountDetails.Add("A", new Tuple<int, int>(3, 20));
+            _discountDetails.Add("B", new Tuple<int, int>(2, 15));
+        }
 
         public void SkuScanned(string sku)
         {
-            if (sku.Equals("A"))
+            if (_discountDetails.ContainsKey(sku))
             {
                 if (!_skuCount.ContainsKey(sku))
                 {
                     _skuCount.Add(sku, 0);
                 }
                 _skuCount[sku] = _skuCount[sku] + 1;
-                if (_skuCount[sku] == 3)
-                {
-                    NotifyListeners(20);
-                }
-            }
 
-            if (sku.Equals("B"))
-            {
-                if (!_skuCount.ContainsKey(sku))
+                if (_skuCount[sku] == _discountDetails[sku].Item1)
                 {
-                    _skuCount.Add(sku, 0);
-                }
-                _skuCount[sku] = _skuCount[sku] + 1;
-                if (_skuCount[sku] == 2)
-                {
-                    NotifyListeners(15);
+                    NotifyListeners(_discountDetails[sku].Item2);
                 }
             }
         }
