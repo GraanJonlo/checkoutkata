@@ -22,7 +22,7 @@ namespace CheckoutKata
         public void Scanning_two_item_gives_a_total_of_their_summed_prices()
         {
             ILookupPrices priceLookup =
-                new StubbedPriceLookup(new Dictionary<string, int>(1) {{"ASku", 1234}, {"AnotherSku", 5678}});
+                new StubbedPriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
             Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("ASku");
@@ -57,47 +57,69 @@ namespace CheckoutKata
         }
     }
 
-    public class Checkout
+    public class Checkout : IListenForTotals
     {
         private readonly ILookupPrices _priceLookup;
-        private readonly IKeepTotal _total;
+        private readonly IKeepTotal _account;
+        private int _total;
 
-        public Checkout(ILookupPrices priceLookup, IKeepTotal total)
+        public Checkout(ILookupPrices priceLookup, IKeepTotal account)
         {
             _priceLookup = priceLookup;
-            _total = total;
+            _account = account;
+            _account.Register(this);
         }
 
         public int Total()
         {
-            return _total.Get();
+            return _total;
         }
 
         public void Scan(string sku)
         {
-            _total.Add(_priceLookup.PriceFor(sku));
+            _account.Credit(_priceLookup.PriceFor(sku));
         }
+
+        public void NewTotal(int value)
+        {
+            _total = value;
+        }
+    }
+
+    public interface IListenForTotals
+    {
+        void NewTotal(int value);
     }
 
     public class InMemoryTotal : IKeepTotal
     {
         private int _total;
+        private readonly List<IListenForTotals> _listeners = new List<IListenForTotals>(); 
 
-        public void Add(int amount)
+        public void Credit(int amount)
         {
             _total += amount;
+            NotifyListeners();
         }
 
-        public int Get()
+        private void NotifyListeners()
         {
-            return _total;
+            foreach (IListenForTotals listener in _listeners)
+            {
+                listener.NewTotal(_total);
+            }
+        }
+
+        public void Register(IListenForTotals listener)
+        {
+            _listeners.Add(listener);
         }
     }
 
     public interface IKeepTotal
     {
-        void Add(int amount);
-        int Get();
+        void Credit(int amount);
+        void Register(IListenForTotals listener);
     }
 
     public class StubbedPriceLookup : ILookupPrices
