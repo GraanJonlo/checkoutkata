@@ -62,11 +62,11 @@ namespace CheckoutKata
     public class Checkout
     {
         private int _total;
-        private readonly IDictionary<string, int> _priceDetails;
+        private readonly ILookupPrices _priceLookup;
 
         public Checkout(IDictionary<string, int> priceDetails)
         {
-            _priceDetails = priceDetails;
+            _priceLookup = new InMemoryPriceLookup(priceDetails);
         }
 
         public int Total()
@@ -76,7 +76,27 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            _total = _priceDetails[sku];
+            _total = _priceLookup.PriceFor(sku);
         }
+    }
+
+    public class InMemoryPriceLookup : ILookupPrices
+    {
+        private readonly IDictionary<string, int> _priceDetails;
+
+        public InMemoryPriceLookup(IDictionary<string, int> priceDetails)
+        {
+            _priceDetails = priceDetails;
+        }
+
+        public int PriceFor(string sku)
+        {
+            return _priceDetails[sku];
+        }
+    }
+
+    public interface ILookupPrices
+    {
+        int PriceFor(string sku);
     }
 }
