@@ -7,33 +7,15 @@ namespace CheckoutKata
     public class CheckoutTests
     {
         [Test]
-        public void Sanity_test()
+        public void Scanning_an_item_gives_a_total_of_that_items_price()
         {
-            Assert.That(true, Is.True);
-        }
-
-        [Test]
-        public void Scanning_an_A_gives_a_total_of_50()
-        {
-            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) {{"A",50}});
+            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
             Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
-            checkout.Scan("A");
+            checkout.Scan("testSku");
 
             var total = checkout.Total();
-            Assert.That(total, Is.EqualTo(50));
-        }
-
-        [Test]
-        public void Scanning_a_B_gives_a_total_of_30()
-        {
-            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) { { "B", 30 } });
-            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
-
-            checkout.Scan("B");
-
-            var total = checkout.Total();
-            Assert.That(total, Is.EqualTo(30));
+            Assert.That(total, Is.EqualTo(1234));
         }
     }
 
