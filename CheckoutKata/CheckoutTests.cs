@@ -44,6 +44,18 @@ namespace CheckoutKata
             var total = checkout.Total();
             Assert.That(total, Is.EqualTo(130));
         }
+
+        [Test]
+        public void Scanning_2_Bs_has_a_total_of_45()
+        {
+            Checkout checkout = new CheckoutBuilder().Build();
+
+            checkout.Scan("B");
+            checkout.Scan("B");
+
+            var total = checkout.Total();
+            Assert.That(total, Is.EqualTo(45));
+        }
     }
 
     public class CheckoutBuilder

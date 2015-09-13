@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="CheckoutTests.cs" />
     <Compile Include="IKeepTotal.cs" />
+    <Compile Include="IListenForSkus.cs" />
     <Compile Include="IListenForTotals.cs" />
     <Compile Include="InMemoryTotal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
