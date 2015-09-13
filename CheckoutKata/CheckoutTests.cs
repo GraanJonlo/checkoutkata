@@ -46,6 +46,12 @@ namespace CheckoutKata
     public class Checkout
     {
         private int _total;
+        private readonly Dictionary<string, int> _priceDetails;
+
+        public Checkout()
+        {
+            _priceDetails = new Dictionary<string, int>(2) { { "A", 50 }, { "B", 30 } };
+        }
 
         public int Total()
         {
@@ -54,8 +60,7 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            var priceDetails = new Dictionary<string, int>(2) {{"A", 50}, {"B", 30}};
-            _total = priceDetails[sku];
+            _total = _priceDetails[sku];
         }
     }
 }
