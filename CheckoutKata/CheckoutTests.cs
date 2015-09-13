@@ -31,6 +31,19 @@ namespace CheckoutKata
             var total = checkout.Total();
             Assert.That(total, Is.EqualTo(1234 + 5678));
         }
+
+        [Test]
+        public void Scanning_3_As_has_a_total_of_130()
+        {
+            Checkout checkout = new CheckoutBuilder().Build();
+
+            checkout.Scan("A");
+            checkout.Scan("A");
+            checkout.Scan("A");
+
+            var total = checkout.Total();
+            Assert.That(total, Is.EqualTo(130));
+        }
     }
 
     public class CheckoutBuilder
