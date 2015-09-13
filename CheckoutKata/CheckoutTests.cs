@@ -57,23 +57,45 @@ namespace CheckoutKata
 
     public class Checkout
     {
-        private int _total;
         private readonly ILookupPrices _priceLookup;
+        private readonly IKeepTotal _total;
 
         public Checkout(ILookupPrices priceLookup)
         {
             _priceLookup = priceLookup;
+            _total = new InMemoryTotal();
         }
 
         public int Total()
         {
-            return _total;
+            return _total.Get();
         }
 
         public void Scan(string sku)
         {
-            _total += _priceLookup.PriceFor(sku);
+            _total.Add(_priceLookup.PriceFor(sku));
         }
+    }
+
+    public class InMemoryTotal : IKeepTotal
+    {
+        private int _total;
+
+        public void Add(int amount)
+        {
+            _total += amount;
+        }
+
+        public int Get()
+        {
+            return _total;
+        }
+    }
+
+    public interface IKeepTotal
+    {
+        void Add(int amount);
+        int Get();
     }
 
     public class StubbedPriceLookup : ILookupPrices
