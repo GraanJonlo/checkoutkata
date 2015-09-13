@@ -74,6 +74,7 @@ namespace CheckoutKata
     {
         private readonly ILookupPrices _priceLookup;
         private int _total;
+        private int _countA;
 
         public Checkout(ILookupPrices priceLookup, IKeepTotal account)
         {
@@ -84,12 +85,18 @@ namespace CheckoutKata
 
         public int Total()
         {
-            return _total;
+            var discount = _countA == 3 ? 20 : 0;
+            return _total - discount;
         }
 
         public void Scan(string sku)
         {
             _priceLookup.SkuScanned(sku);
+
+            if (sku.Equals("A"))
+            {
+                _countA++;
+            }
         }
 
         public void NewTotal(int value)
