@@ -76,7 +76,7 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            _priceLookup.PriceFor(sku);
+            _priceLookup.SkuScanned(sku);
         }
 
         public void NewTotal(int value)

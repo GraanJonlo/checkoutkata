@@ -2,7 +2,7 @@
 
 namespace CheckoutKata
 {
-    public class StubbedPriceLookup : ILookupPrices
+    internal class StubbedPriceLookup : ILookupPrices
     {
         private readonly IDictionary<string, int> _priceDetails;
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
@@ -12,7 +12,7 @@ namespace CheckoutKata
             _priceDetails = priceDetails;
         }
 
-        public void PriceFor(string sku)
+        public void SkuScanned(string sku)
         {
             NotifyListeners(_priceDetails[sku]);
         }
