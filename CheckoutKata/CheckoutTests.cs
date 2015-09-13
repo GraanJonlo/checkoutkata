@@ -73,35 +73,51 @@ namespace CheckoutKata
     public class Checkout : IListenForTotals
     {
         private readonly ILookupPrices _priceLookup;
+        private readonly DiscountTracker _discountTracker;
         private int _total;
-        private int _countA;
 
         public Checkout(ILookupPrices priceLookup, IKeepTotal account)
         {
             _priceLookup = priceLookup;
             _priceLookup.Register(account);
             account.Register(this);
+
+            _discountTracker = new DiscountTracker();
         }
 
         public int Total()
         {
-            var discount = _countA == 3 ? 20 : 0;
+            var discount = _discountTracker.GetACount() == 3 ? 20 : 0;
             return _total - discount;
         }
 
         public void Scan(string sku)
         {
             _priceLookup.SkuScanned(sku);
+            _discountTracker.SkuScanned(sku);
+        }
 
+        public void NewTotal(int value)
+        {
+            _total = value;
+        }
+    }
+
+    public class DiscountTracker
+    {
+        private int _countA;
+
+        public void SkuScanned(string sku)
+        {
             if (sku.Equals("A"))
             {
                 _countA++;
             }
         }
 
-        public void NewTotal(int value)
+        public int GetACount()
         {
-            _total = value;
+            return _countA;
         }
     }
 
