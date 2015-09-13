@@ -15,8 +15,8 @@ namespace CheckoutKata
         [Test]
         public void Scanning_an_A_gives_a_total_of_50()
         {
-            Checkout checkout =
-                new CheckoutBuilder().WithPriceDetails(new Dictionary<string, int>(1) {{"A", 50}}).Build();
+            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) {{"A",50}});
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("A");
 
@@ -27,8 +27,8 @@ namespace CheckoutKata
         [Test]
         public void Scanning_a_B_gives_a_total_of_30()
         {
-            Checkout checkout =
-                new CheckoutBuilder().WithPriceDetails(new Dictionary<string, int>(1) { { "B", 30 } }).Build();
+            ILookupPrices priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(1) { { "B", 30 } });
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("B");
 
@@ -39,7 +39,7 @@ namespace CheckoutKata
 
     public class CheckoutBuilder
     {
-        private ILookupPrices _priceLookup = new InMemoryPriceLookup(new Dictionary<string, int>(4)
+        private ILookupPrices _priceLookup = new StubbedPriceLookup(new Dictionary<string, int>(4)
         {
             {"A", 50},
             {"B", 30},
@@ -47,9 +47,9 @@ namespace CheckoutKata
             {"D", 15}
         });
 
-        public CheckoutBuilder WithPriceDetails(IDictionary<string, int> priceDetails)
+        public CheckoutBuilder With(ILookupPrices priceLookup)
         {
-            _priceLookup = new InMemoryPriceLookup(priceDetails);
+            _priceLookup = priceLookup;
             return this;
         }
 
@@ -80,11 +80,11 @@ namespace CheckoutKata
         }
     }
 
-    public class InMemoryPriceLookup : ILookupPrices
+    public class StubbedPriceLookup : ILookupPrices
     {
         private readonly IDictionary<string, int> _priceDetails;
 
-        public InMemoryPriceLookup(IDictionary<string, int> priceDetails)
+        public StubbedPriceLookup(IDictionary<string, int> priceDetails)
         {
             _priceDetails = priceDetails;
         }
