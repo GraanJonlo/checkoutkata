@@ -60,14 +60,13 @@ namespace CheckoutKata
     public class Checkout : IListenForTotals
     {
         private readonly ILookupPrices _priceLookup;
-        private readonly IKeepTotal _account;
         private int _total;
 
         public Checkout(ILookupPrices priceLookup, IKeepTotal account)
         {
             _priceLookup = priceLookup;
-            _account = account;
-            _account.Register(this);
+            _priceLookup.Register(account);
+            account.Register(this);
         }
 
         public int Total()
@@ -77,18 +76,13 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            _account.Credit(_priceLookup.PriceFor(sku));
+            _priceLookup.PriceFor(sku);
         }
 
         public void NewTotal(int value)
         {
             _total = value;
         }
-    }
-
-    public interface IListenForTotals
-    {
-        void NewTotal(int value);
     }
 
     public class InMemoryTotal : IKeepTotal
@@ -125,20 +119,35 @@ namespace CheckoutKata
     public class StubbedPriceLookup : ILookupPrices
     {
         private readonly IDictionary<string, int> _priceDetails;
+        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
 
         public StubbedPriceLookup(IDictionary<string, int> priceDetails)
         {
             _priceDetails = priceDetails;
         }
 
-        public int PriceFor(string sku)
+        public void PriceFor(string sku)
         {
-            return _priceDetails[sku];
+            NotifyListeners(_priceDetails[sku]);
+        }
+
+        private void NotifyListeners(int price)
+        {
+            foreach (IKeepTotal listener in _listeners)
+            {
+                listener.Credit(price);
+            }
+        }
+
+        public void Register(IKeepTotal listener)
+        {
+            _listeners.Add(listener);
         }
     }
 
     public interface ILookupPrices
     {
-        int PriceFor(string sku);
+        void PriceFor(string sku);
+        void Register(IKeepTotal listener);
     }
 }
