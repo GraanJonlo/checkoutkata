@@ -17,6 +17,20 @@ namespace CheckoutKata
             var total = checkout.Total();
             Assert.That(total, Is.EqualTo(1234));
         }
+
+        [Test]
+        public void Scanning_two_item_gives_a_total_of_their_summed_prices()
+        {
+            ILookupPrices priceLookup =
+                new StubbedPriceLookup(new Dictionary<string, int>(1) {{"ASku", 1234}, {"AnotherSku", 5678}});
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
+
+            checkout.Scan("ASku");
+            checkout.Scan("AnotherSku");
+
+            var total = checkout.Total();
+            Assert.That(total, Is.EqualTo(1234 + 5678));
+        }
     }
 
     public class CheckoutBuilder
