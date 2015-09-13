@@ -68,22 +68,23 @@ namespace CheckoutKata
 
         public Checkout Build()
         {
-            return new Checkout(_priceLookup, _discountTracker, _total);
+            return new Checkout(new List<IListenForSkus>(2) {_priceLookup, _discountTracker}, _total);
         }
     }
 
     public class Checkout : IListenForTotals
     {
-        private readonly List<IListenForSkus> _skuListener = new List<IListenForSkus>(2); 
+        private readonly IList<IListenForSkus> _skuListeners; 
         private int _total;
 
-        public Checkout(IListenForSkus priceLookup, IListenForSkus discountTracker, IKeepTotal account)
+        public Checkout(IList<IListenForSkus> skuListeners, IKeepTotal account)
         {
-            priceLookup.Register(account);
-            _skuListener.Add(priceLookup);
+            _skuListeners = skuListeners;
 
-            discountTracker.Register(account);
-            _skuListener.Add(discountTracker);
+            foreach (IListenForSkus listener in skuListeners)
+            {
+                listener.Register(account);
+            }
 
             account.Register(this);
         }
@@ -95,7 +96,7 @@ namespace CheckoutKata
 
         public void Scan(string sku)
         {
-            foreach (IListenForSkus listener in _skuListener)
+            foreach (IListenForSkus listener in _skuListeners)
             {
                 listener.SkuScanned(sku);
             }
