@@ -35,7 +35,7 @@ namespace CheckoutKata
         [Test]
         public void Scanning_3_As_has_a_total_of_130()
         {
-            Checkout checkout = new CheckoutBuilder().Build();
+            Checkout checkout = new CheckoutBuilder().WithDiscountTracker(new DiscountTracker("A", 3, 20)).Build();
 
             checkout.Scan("A");
             checkout.Scan("A");

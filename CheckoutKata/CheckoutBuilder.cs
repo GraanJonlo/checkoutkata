@@ -13,17 +13,19 @@ namespace CheckoutKata
             {"D", 15}
         });
 
-        private readonly List<IListenForSkus> _discountTrackers = new List<IListenForSkus>(2)
-        {
-            new DiscountTracker("A", 3, 20),
-            new DiscountTracker("B", 2, 15)
-        }; 
+        private readonly List<IListenForSkus> _discountTrackers = new List<IListenForSkus>();
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 
         public CheckoutBuilder WithPriceLookup(IListenForSkus priceLookup)
         {
             _priceLookup = priceLookup;
+            return this;
+        }
+
+        public CheckoutBuilder WithDiscountTracker(IListenForSkus discountTracker)
+        {
+            _discountTrackers.Add(discountTracker);
             return this;
         }
 
