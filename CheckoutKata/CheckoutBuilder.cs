@@ -8,15 +8,9 @@ namespace CheckoutKata
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 
-        public CheckoutBuilder WithPriceLookup(IListenForSkus priceLookup)
+        public CheckoutBuilder With(IListenForSkus listener)
         {
-            _skuListeners.Add(priceLookup);
-            return this;
-        }
-
-        public CheckoutBuilder WithDiscountTracker(IListenForSkus discountTracker)
-        {
-            _skuListeners.Add(discountTracker);
+            _skuListeners.Add(listener);
             return this;
         }
 

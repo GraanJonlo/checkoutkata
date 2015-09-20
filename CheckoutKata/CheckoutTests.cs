@@ -10,7 +10,7 @@ namespace CheckoutKata
         public void Scanning_an_item_gives_a_total_of_that_items_price()
         {
             IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
-            Checkout checkout = new CheckoutBuilder().WithPriceLookup(priceLookup).Build();
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("testSku");
 
@@ -23,7 +23,7 @@ namespace CheckoutKata
         {
             IListenForSkus priceLookup =
                 new PriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
-            Checkout checkout = new CheckoutBuilder().WithPriceLookup(priceLookup).Build();
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("ASku");
             checkout.Scan("AnotherSku");
@@ -36,10 +36,8 @@ namespace CheckoutKata
         public void Applies_applicable_discount()
         {
             IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
-            Checkout checkout =
-                new CheckoutBuilder().WithPriceLookup(priceLookup)
-                    .WithDiscountTracker(new DiscountTracker("Foo", 2, 200))
-                    .Build();
+            IListenForSkus discountTracker = new DiscountTracker("Foo", 2, 200);
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).With(discountTracker).Build();
 
             checkout.Scan("Foo");
             checkout.Scan("Foo");
@@ -52,10 +50,8 @@ namespace CheckoutKata
         public void Applies_applicable_discount_multiple_times()
         {
             IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
-            Checkout checkout =
-                new CheckoutBuilder().WithPriceLookup(priceLookup)
-                    .WithDiscountTracker(new DiscountTracker("Foo", 2, 200))
-                    .Build();
+            IListenForSkus discountTracker = new DiscountTracker("Foo", 2, 200);
+            Checkout checkout = new CheckoutBuilder().With(priceLookup).With(discountTracker).Build();
 
             checkout.Scan("Foo");
             checkout.Scan("Foo");
