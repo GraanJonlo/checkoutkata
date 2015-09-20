@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace CheckoutKata
@@ -57,111 +55,6 @@ namespace CheckoutKata
 
             var total = checkout.Total();
             Assert.That(total, Is.EqualTo(45));
-        }
-    }
-
-    public class CheckoutBuilder
-    {
-        private IListenForSkus _priceLookup = new PriceLookup(new Dictionary<string, int>(4)
-        {
-            {"A", 50},
-            {"B", 30},
-            {"C", 20},
-            {"D", 15}
-        });
-
-        private readonly IListenForSkus _discountTracker = new DiscountTracker();
-
-        private readonly IKeepTotal _total = new InMemoryTotal();
-
-        public CheckoutBuilder WithPriceLookup(IListenForSkus priceLookup)
-        {
-            _priceLookup = priceLookup;
-            return this;
-        }
-
-        public Checkout Build()
-        {
-            return new Checkout(new List<IListenForSkus>(2) {_priceLookup, _discountTracker}, _total);
-        }
-    }
-
-    public class Checkout : IListenForTotals
-    {
-        private readonly IList<IListenForSkus> _skuListeners; 
-        private int _total;
-
-        public Checkout(IList<IListenForSkus> skuListeners, IKeepTotal account)
-        {
-            _skuListeners = skuListeners;
-
-            foreach (IListenForSkus listener in skuListeners)
-            {
-                listener.Register(account);
-            }
-
-            account.Register(this);
-        }
-
-        public int Total()
-        {
-            return _total;
-        }
-
-        public void Scan(string sku)
-        {
-            foreach (IListenForSkus listener in _skuListeners)
-            {
-                listener.SkuScanned(sku);
-            }
-        }
-
-        public void NewTotal(int value)
-        {
-            _total = value;
-        }
-    }
-
-    internal class DiscountTracker : IListenForSkus
-    {
-        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
-        private readonly Dictionary<string, int> _skuCount = new Dictionary<string, int>();
-        private readonly Dictionary<string, Tuple<int,int>> _discountDetails = new Dictionary<string, Tuple<int, int>>(); 
-
-        public DiscountTracker()
-        {
-            _discountDetails.Add("A", new Tuple<int, int>(3, 20));
-            _discountDetails.Add("B", new Tuple<int, int>(2, 15));
-        }
-
-        public void SkuScanned(string sku)
-        {
-            if (_discountDetails.ContainsKey(sku))
-            {
-                if (!_skuCount.ContainsKey(sku))
-                {
-                    _skuCount.Add(sku, 0);
-                }
-                _skuCount[sku] = _skuCount[sku] + 1;
-
-                if (_skuCount[sku] == _discountDetails[sku].Item1)
-                {
-                    NotifyListeners(_discountDetails[sku].Item2);
-                }
-            }
-        }
-
-        private void NotifyListeners(int discount)
-        {
-            foreach (IKeepTotal listener in _listeners)
-            {
-                listener.Debit(discount);
-            }
-        }
-
-        public void Register(IKeepTotal listener)
-        {
-            _listeners.Add(listener);
         }
     }
 }
