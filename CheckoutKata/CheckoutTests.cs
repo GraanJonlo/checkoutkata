@@ -33,16 +33,19 @@ namespace CheckoutKata
         }
 
         [Test]
-        public void Scanning_3_As_has_a_total_of_130()
+        public void Applies_applicable_discount()
         {
-            Checkout checkout = new CheckoutBuilder().WithDiscountTracker(new DiscountTracker("A", 3, 20)).Build();
+            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
+            Checkout checkout =
+                new CheckoutBuilder().WithPriceLookup(priceLookup)
+                    .WithDiscountTracker(new DiscountTracker("Foo", 2, 200))
+                    .Build();
 
-            checkout.Scan("A");
-            checkout.Scan("A");
-            checkout.Scan("A");
+            checkout.Scan("Foo");
+            checkout.Scan("Foo");
 
             var total = checkout.Total();
-            Assert.That(total, Is.EqualTo(130));
+            Assert.That(total, Is.EqualTo(-200));
         }
     }
 }
