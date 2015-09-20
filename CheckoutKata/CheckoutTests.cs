@@ -47,5 +47,23 @@ namespace CheckoutKata
             var total = checkout.Total();
             Assert.That(total, Is.EqualTo(-200));
         }
+
+        [Test]
+        public void Applies_applicable_discount_multiple_times()
+        {
+            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
+            Checkout checkout =
+                new CheckoutBuilder().WithPriceLookup(priceLookup)
+                    .WithDiscountTracker(new DiscountTracker("Foo", 2, 200))
+                    .Build();
+
+            checkout.Scan("Foo");
+            checkout.Scan("Foo");
+            checkout.Scan("Foo");
+            checkout.Scan("Foo");
+
+            var total = checkout.Total();
+            Assert.That(total, Is.EqualTo(-400));
+        }
     }
 }
