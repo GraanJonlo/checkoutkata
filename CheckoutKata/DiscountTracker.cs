@@ -24,7 +24,7 @@ namespace CheckoutKata
             if (sku.Equals(_sku))
             {
                 _count++;
-                if (_count == _trigger)
+                if (_count % _trigger == 0)
                 {
                     NotifyListeners();
                 }
