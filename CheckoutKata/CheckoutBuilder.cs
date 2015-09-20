@@ -12,7 +12,7 @@ namespace CheckoutKata
             {"D", 15}
         });
 
-        private readonly IListenForSkus _discountTracker = new DiscountTracker();
+        private readonly IListenForSkus _discountTracker = new DiscountTrackerHolder();
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 

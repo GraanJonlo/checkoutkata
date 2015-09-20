@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Checkout.cs" />
+    <Compile Include="CheckoutBuilder.cs" />
     <Compile Include="CheckoutTests.cs" />
+    <Compile Include="DiscountTracker.cs" />
+    <Compile Include="DiscountTrackerHolder.cs" />
     <Compile Include="IKeepTotal.cs" />
     <Compile Include="IListenForSkus.cs" />
     <Compile Include="IListenForTotals.cs" />

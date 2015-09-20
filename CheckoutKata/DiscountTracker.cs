@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace CheckoutKata
@@ -6,37 +5,37 @@ namespace CheckoutKata
     internal class DiscountTracker : IListenForSkus
     {
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
-        private readonly Dictionary<string, int> _skuCount = new Dictionary<string, int>();
-        private readonly Dictionary<string, Tuple<int, int>> _discountDetails = new Dictionary<string, Tuple<int, int>>(); 
+        private readonly string _sku;
+        private readonly int _trigger;
+        private readonly int _discount;
 
-        public DiscountTracker()
+        private int _count;
+
+        public DiscountTracker(string sku, int trigger, int discount)
         {
-            _discountDetails.Add("A", new Tuple<int, int>(3, 20));
-            _discountDetails.Add("B", new Tuple<int, int>(2, 15));
+            _sku = sku;
+            _trigger = trigger;
+            _discount = discount;
+            _count = 0;
         }
 
         public void SkuScanned(string sku)
         {
-            if (_discountDetails.ContainsKey(sku))
+            if (sku.Equals(_sku))
             {
-                if (!_skuCount.ContainsKey(sku))
+                _count++;
+                if (_count == _trigger)
                 {
-                    _skuCount.Add(sku, 0);
-                }
-                _skuCount[sku] = _skuCount[sku] + 1;
-
-                if (_skuCount[sku] == _discountDetails[sku].Item1)
-                {
-                    NotifyListeners(_discountDetails[sku].Item2);
+                    NotifyListeners();
                 }
             }
         }
 
-        private void NotifyListeners(int discount)
+        private void NotifyListeners()
         {
             foreach (IKeepTotal listener in _listeners)
             {
-                listener.Debit(discount);
+                listener.Debit(_discount);
             }
         }
 
