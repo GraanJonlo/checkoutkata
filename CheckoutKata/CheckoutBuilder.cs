@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CheckoutKata
 {
@@ -12,7 +13,11 @@ namespace CheckoutKata
             {"D", 15}
         });
 
-        private readonly IListenForSkus _discountTracker = new DiscountTrackerHolder();
+        private readonly List<IListenForSkus> _discountTrackers = new List<IListenForSkus>(2)
+        {
+            new DiscountTracker("A", 3, 20),
+            new DiscountTracker("B", 2, 15)
+        }; 
 
         private readonly IKeepTotal _total = new InMemoryTotal();
 
@@ -24,7 +29,8 @@ namespace CheckoutKata
 
         public Checkout Build()
         {
-            return new Checkout(new List<IListenForSkus>(2) {_priceLookup, _discountTracker}, _total);
+            var skuListeners = new List<IListenForSkus> {_priceLookup}.Concat(_discountTrackers).ToList();
+            return new Checkout(skuListeners, _total);
         }
     }
 }
