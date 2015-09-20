@@ -1,20 +1,25 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace CheckoutKata
 {
     internal class PriceLookup : IListenForSkus
     {
-        private readonly IDictionary<string, int> _priceDetails;
-        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>(); 
+        private readonly string _sku;
+        private readonly int _price;
+        private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
 
-        public PriceLookup(IDictionary<string, int> priceDetails)
+        public PriceLookup(string sku, int price)
         {
-            _priceDetails = priceDetails;
+            _sku = sku;
+            _price = price;
         }
 
         public void SkuScanned(string sku)
         {
-            NotifyListeners(_priceDetails[sku]);
+            if (_sku.Equals(sku))
+            {
+                NotifyListeners(_price);
+            }
         }
 
         private void NotifyListeners(int price)

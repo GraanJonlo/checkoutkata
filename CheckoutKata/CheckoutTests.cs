@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace CheckoutKata
 {
@@ -9,7 +8,7 @@ namespace CheckoutKata
         [Test]
         public void Scanning_an_item_gives_a_total_of_that_items_price()
         {
-            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) {{"testSku", 1234}});
+            IListenForSkus priceLookup = new PriceLookup("testSku", 1234);
             Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
 
             checkout.Scan("testSku");
@@ -21,9 +20,9 @@ namespace CheckoutKata
         [Test]
         public void Scanning_two_item_gives_a_total_of_their_summed_prices()
         {
-            IListenForSkus priceLookup =
-                new PriceLookup(new Dictionary<string, int>(2) {{"ASku", 1234}, {"AnotherSku", 5678}});
-            Checkout checkout = new CheckoutBuilder().With(priceLookup).Build();
+            IListenForSkus priceLookup1 = new PriceLookup("ASku", 1234);
+            IListenForSkus priceLookup2 = new PriceLookup("AnotherSku", 5678);
+            Checkout checkout = new CheckoutBuilder().With(priceLookup1).With(priceLookup2).Build();
 
             checkout.Scan("ASku");
             checkout.Scan("AnotherSku");
@@ -35,8 +34,8 @@ namespace CheckoutKata
         [Test]
         public void Applies_applicable_discount()
         {
-            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
-            IListenForSkus discountTracker = new DiscountTracker("Foo", 2, 200);
+            IListenForSkus priceLookup = new PriceLookup("Foo", 0);
+            IListenForSkus discountTracker = new MultibuyDiscount("Foo", 2, 200);
             Checkout checkout = new CheckoutBuilder().With(priceLookup).With(discountTracker).Build();
 
             checkout.Scan("Foo");
@@ -49,8 +48,8 @@ namespace CheckoutKata
         [Test]
         public void Applies_applicable_discount_multiple_times()
         {
-            IListenForSkus priceLookup = new PriceLookup(new Dictionary<string, int>(1) { { "Foo", 0 } });
-            IListenForSkus discountTracker = new DiscountTracker("Foo", 2, 200);
+            IListenForSkus priceLookup = new PriceLookup("Foo", 0);
+            IListenForSkus discountTracker = new MultibuyDiscount("Foo", 2, 200);
             Checkout checkout = new CheckoutBuilder().With(priceLookup).With(discountTracker).Build();
 
             checkout.Scan("Foo");

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CheckoutKata
 {
-    internal class DiscountTracker : IListenForSkus
+    internal class MultibuyDiscount : IListenForSkus
     {
         private readonly List<IKeepTotal> _listeners = new List<IKeepTotal>();
         private readonly string _sku;
@@ -11,7 +11,7 @@ namespace CheckoutKata
 
         private int _count;
 
-        public DiscountTracker(string sku, int trigger, int discount)
+        public MultibuyDiscount(string sku, int trigger, int discount)
         {
             _sku = sku;
             _trigger = trigger;

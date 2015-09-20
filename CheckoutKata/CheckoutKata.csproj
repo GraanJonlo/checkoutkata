@@ -46,13 +46,13 @@
     <Compile Include="Checkout.cs" />
     <Compile Include="CheckoutBuilder.cs" />
     <Compile Include="CheckoutTests.cs" />
-    <Compile Include="DiscountTracker.cs" />
+    <Compile Include="MultibuyDiscount.cs" />
     <Compile Include="IKeepTotal.cs" />
     <Compile Include="IListenForSkus.cs" />
     <Compile Include="IListenForTotals.cs" />
     <Compile Include="InMemoryTotal.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PriceLookup.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
